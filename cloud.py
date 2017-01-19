@@ -6,7 +6,6 @@ import json
 import twitter
 import requests
 import argparse
-import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from bs4 import BeautifulSoup
 
@@ -72,12 +71,6 @@ class Cloud:
         self.path = 'images'
         self.filename = url + '.png'
 
-    def show(self):
-        plt.title(self.url)
-        plt.imshow(self.cloud)
-        plt.axis('off')
-        plt.show()
-
     def save(self):
         if not os.path.exists(self.path):
             os.mkdir(self.path)
@@ -90,9 +83,7 @@ def main(args):
     for url in urls:
         cloud = Cloud(url)
         cloud.save()
-        if args['show']:
-            cloud.show()
-        elif args['tweet']:
+        if args['tweet']:
             text = 'Dagens ordsky fra ' + url
             image = os.path.join(cloud.path, cloud.filename)
             client.post(text, image)
@@ -102,7 +93,6 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str, nargs='+',
                         help='url of site to search for words; example: vg.no')
-    parser.add_argument('--show', action='store_true')
     parser.add_argument('--tweet', action='store_true')
 
     return vars(parser.parse_args())
