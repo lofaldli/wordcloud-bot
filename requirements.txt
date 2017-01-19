@@ -1,0 +1,6 @@
+matplotlib
+numpy
+wordcloud
+requests
+beautifulsoup4
+python-twitter
