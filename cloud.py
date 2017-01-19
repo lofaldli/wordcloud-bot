@@ -93,7 +93,9 @@ def main(args):
         if args['show']:
             cloud.show()
         elif args['tweet']:
-            client.post(url, os.path.join(cloud.path, cloud.filename))
+            text = 'Dagens ordsky fra ' + url
+            image = os.path.join(cloud.path, cloud.filename)
+            client.post(text, image)
 
 
 def parse_args():
