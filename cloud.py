@@ -27,9 +27,9 @@ class TwitterClient:
 
 boring_words = re.compile(r'\b(' + r'|'.join([
     'jeg', 'du', 'han', 'hun', 'vi', 'de', 'dem', 'deg', 'meg',
-    'er', 'av', 'til', 'og', 'på', 'om', 'etter',
-    'det', 'fra', 'i', 'for', 'med', 'kan', 'mer',
-    'har', 'vil', 'se', 'nå', 'en', 'blir', 'var', 'som',
+    'er', 'av', 'til', 'og', 'på', 'om', 'etter', 'film', 'video',
+    'det', 'fra', 'i', 'for', 'med', 'kan', 'mer', 'dagbladet', 'pluss',
+    'har', 'vil', 'se', 'nå', 'en', 'blir', 'var', 'som', 'slik',
 ]) + r')\b\s*')
 
 
