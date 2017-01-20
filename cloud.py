@@ -24,13 +24,9 @@ class TwitterClient:
                                      verify_status_length=False)
         return status
 
-
-boring_words = re.compile(r'\b(' + r'|'.join([
-    'jeg', 'du', 'han', 'hun', 'vi', 'de', 'dem', 'deg', 'meg',
-    'er', 'av', 'til', 'og', 'på', 'om', 'etter', 'film', 'video',
-    'det', 'fra', 'i', 'for', 'med', 'kan', 'mer', 'dagbladet', 'pluss',
-    'har', 'vil', 'se', 'nå', 'en', 'blir', 'var', 'som', 'slik',
-]) + r')\b\s*')
+boring_words = re.compile(r'\b(' + r'|'.join(
+    open('boring_words.txt').read().split()
+) + r')\b\s*')
 
 
 def get(url):
