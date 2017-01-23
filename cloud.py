@@ -100,7 +100,7 @@ def main(args):
             cloud = Cloud(text, name)
             cloud.save()
             if args['tweet']:
-                text = 'Dagens ordsky fra ' + url
+                text = 'Dagens ordsky fra ' + name
                 image = os.path.join(cloud.path, cloud.filename)
                 client.post(text, image)
 
