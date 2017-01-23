@@ -31,14 +31,17 @@ boring_words = re.compile(r'\b(' + r'|'.join(
 
 def get(url):
     if not url.startswith('http'):
-        url = 'http://' + url
-    r = requests.get(url)
+        url = 'http://www.' + url
+    headers = {
+        'accept-charset': 'utf-8',
+    }
+    r = requests.get(url, headers=headers)
     if r.status_code != 200:
         raise Exception('no soup from "%s"' % url)
 
     text = r.text
     if r.encoding.lower() != 'utf-8':
-        text = text.decode(r.encoding).encode('utf-8')
+        text = bytes(text, r.encoding).decode('utf-8')
 
     return BeautifulSoup(text, 'html.parser')
 
@@ -55,17 +58,21 @@ def parse_soup(soup):
     return '\n'.join(super_text)
 
 
+def get_text(url):
+    soup = get(url)
+    text = parse_soup(soup)
+    return boring_words.sub('', text)
+
+
 class Cloud:
-    def __init__(self, url, width=1200, height=600):
-        self.url = url
-        soup = get(url)
-        text = parse_soup(soup)
-        text = boring_words.sub('', text)
+    def __init__(self, text, name='cloud', width=1200, height=600):
+        self.name = name
+        self.text = text
         if not text:
-            raise Exception('invalid page format at "%s"' % url)
+            raise Exception('invalid page format at "%s"' % name)
         self.cloud = WordCloud(width=width, height=height).generate(text)
         self.path = 'images'
-        self.filename = url + '.png'
+        self.filename = name + '.png'
 
     def save(self):
         if not os.path.exists(self.path):
@@ -74,15 +81,28 @@ class Cloud:
 
 
 def main(args):
-    client = TwitterClient()
+    if args['tweet']:
+        client = TwitterClient()
     urls = args['url']
+    texts = {}
     for url in urls:
-        cloud = Cloud(url)
+        texts[url] = get_text(url)
+
+    if args['combine']:
+        text = ' '.join(texts.values())
+        cloud = Cloud(text)
         cloud.save()
         if args['tweet']:
-            text = 'Dagens ordsky fra ' + url
             image = os.path.join(cloud.path, cloud.filename)
-            client.post(text, image)
+            client.post('', image)
+    else:
+        for name, text in texts.items():
+            cloud = Cloud(text, name)
+            cloud.save()
+            if args['tweet']:
+                text = 'Dagens ordsky fra ' + url
+                image = os.path.join(cloud.path, cloud.filename)
+                client.post(text, image)
 
 
 def parse_args():
@@ -90,6 +110,7 @@ def parse_args():
     parser.add_argument('url', type=str, nargs='+',
                         help='url of site to search for words; example: vg.no')
     parser.add_argument('--tweet', action='store_true')
+    parser.add_argument('--combine', action='store_true')
 
     return vars(parser.parse_args())
 
